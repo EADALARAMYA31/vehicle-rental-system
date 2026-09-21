@@ -1,3 +1,12 @@
+// Works on both Windows (bat) and Linux/Mac (sh) Jenkins agents
+def run(String cmd) {
+    if (isUnix()) {
+        sh cmd
+    } else {
+        bat cmd
+    }
+}
+
 pipeline {
     agent any
 
@@ -21,13 +30,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn -B clean compile'   // use 'bat' instead of 'sh' on Windows agents
+                script { run('mvn -B clean compile') }
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn -B test'
+                script { run('mvn -B test') }
             }
             post {
                 always {
@@ -38,7 +47,7 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh 'mvn -B package -DskipTests'
+                script { run('mvn -B package -DskipTests') }
             }
         }
 
